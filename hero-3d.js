@@ -4,8 +4,10 @@ const host = document.querySelector('#hero-scene');
 const hero = document.querySelector('.hero');
 const art = document.querySelector('.hero-art');
 const introUI = document.querySelector('#intro-ui');
-const motionButton = document.querySelector('#toggle-motion');
 const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+const INTRO_PLAYBACK_RATE = 1.875; // Previous 1.5x speed, increased by another 1.25x.
+const INTRO_DURATION = 6.45;
+const INTRO_DURATION_MS = INTRO_DURATION * 1000 / INTRO_PLAYBACK_RATE;
 const clamp = THREE.MathUtils.clamp;
 const lerp = THREE.MathUtils.lerp;
 const smooth = (a, b, value) => { const x = clamp((value - a) / (b - a), 0, 1); return x * x * (3 - 2 * x); };
@@ -110,7 +112,7 @@ if (renderer) {
     target.scale = Math.min(artRect.width / height * viewHeight / 6.2, artRect.height / height * viewHeight / 6.8);
     if (!intro) { current = {...target}; renderScene(0); }
   }
-  function updateButton() { motionButton.textContent = paused ? '▷' : 'Ⅱ'; motionButton.setAttribute('aria-pressed',String(paused)); motionButton.setAttribute('aria-label', paused ? 'アニメーションを再生' : 'アニメーションを一時停止'); hero.classList.toggle('motion-paused',paused); }
+  function updateMotionState() { hero.classList.toggle('motion-paused',paused); }
   function finishIntro() {
     if (!intro) return;
     intro = false; introFinished = true; clearTimeout(fallbackTimeout);
@@ -129,14 +131,14 @@ if (renderer) {
     document.querySelector('#skip-intro').focus({preventScroll:true});
     // The first canvas frame must already have every piece off screen.
     resize(); renderScene(introStarted);
-    clearTimeout(fallbackTimeout); fallbackTimeout = setTimeout(finishIntro, 7600);
+    clearTimeout(fallbackTimeout); fallbackTimeout = setTimeout(finishIntro, INTRO_DURATION_MS + 1000);
     requestTick();
   }
   function renderScene(stamp) {
     if (lost) return;
     const delta = lastFrame ? Math.min((stamp-lastFrame)/1000,.05) : .016; lastFrame = stamp;
-    if (!paused && !document.hidden) time += delta;
-    const elapsed = intro ? (performance.now()-introStarted)/1000 : 10;
+    if (!paused && !document.hidden) time += delta * (intro ? INTRO_PLAYBACK_RATE : 1);
+    const elapsed = intro ? (performance.now()-introStarted)/1000 * INTRO_PLAYBACK_RATE : 10;
     const transition = intro ? smooth(4.65,6.4,elapsed) : 1;
     if (intro) {
       const introScale = Math.min(1.02, aspect < .8 ? aspect*1.45 : 1.02);
@@ -144,11 +146,11 @@ if (renderer) {
       current.y = lerp(mobile() ? .8 : .45, target.y, transition);
       current.scale = lerp(introScale,target.scale,transition);
       const step = clamp(Math.floor(elapsed / .79),0,4);
-      document.querySelector('#intro-field').textContent = elapsed < 4.3 ? shapes[step].label : 'FIVE EXPERTISE. ONE TEAM.';
+      document.querySelector('#intro-field').textContent = elapsed < 4.3 ? shapes[step].label : 'Five in One team';
       document.querySelector('#intro-counter').textContent = `0${step+1} / 05`;
       document.querySelector('#intro-progress').style.transform = `scaleX(${Math.min(elapsed/6.4,1)})`;
       if (elapsed > 4.6) document.body.classList.add('intro-finishing');
-      if (elapsed > 6.45) { finishIntro(); return; }
+      if (elapsed > INTRO_DURATION) { finishIntro(); return; }
     }
     const rotY = paused ? -.09 : Math.sin(time*.23)*.1 - .09 + pointer.x*.12;
     const rotX = paused ? .06 : Math.cos(time*.21)*.05 + pointer.y*.1;
@@ -197,21 +199,20 @@ if (renderer) {
     if (!frameId && (intro || !paused)) frameId = requestAnimationFrame(tick);
   }
   function requestTick() { if (!frameId && !lost && !document.hidden && (visible || intro)) { lastFrame = 0; frameId = requestAnimationFrame(tick); } }
-  host.addEventListener('webglcontextlost', event => { event.preventDefault(); lost=true; finishIntro(); cancelAnimationFrame(frameId); frameId=0; hero.classList.remove('has-3d'); document.querySelector('#scene-controls').hidden=true; });
-  renderer.domElement.addEventListener('webglcontextlost', event => { event.preventDefault(); lost=true; finishIntro(); cancelAnimationFrame(frameId); frameId=0; hero.classList.remove('has-3d'); document.querySelector('#scene-controls').hidden=true; });
-  renderer.domElement.addEventListener('webglcontextrestored', () => { lost=false; hero.classList.add('has-3d'); document.querySelector('#scene-controls').hidden=false; resize(); requestTick(); });
+  host.addEventListener('webglcontextlost', event => { event.preventDefault(); lost=true; finishIntro(); cancelAnimationFrame(frameId); frameId=0; hero.classList.remove('has-3d'); });
+  renderer.domElement.addEventListener('webglcontextlost', event => { event.preventDefault(); lost=true; finishIntro(); cancelAnimationFrame(frameId); frameId=0; hero.classList.remove('has-3d'); });
+  renderer.domElement.addEventListener('webglcontextrestored', () => { lost=false; hero.classList.add('has-3d'); resize(); requestTick(); });
   hero.addEventListener('pointermove', event => { if (event.pointerType !== 'mouse') return; const rect = hero.getBoundingClientRect(); pointer.x=(event.clientX-rect.left)/rect.width-.5; pointer.y=(event.clientY-rect.top)/rect.height-.5; });
   hero.addEventListener('pointerleave', () => { pointer={x:0,y:0}; });
   const resizeObserver = new ResizeObserver(() => { resize(); requestTick(); }); resizeObserver.observe(host); resizeObserver.observe(art);
   const visibilityObserver = new IntersectionObserver(entries => { visible=entries[0].isIntersecting; if(visible) requestTick(); else if(!intro) {cancelAnimationFrame(frameId); frameId=0;} },{threshold:0}); visibilityObserver.observe(hero);
   window.addEventListener('scroll', () => { viewOffset=clamp(-hero.getBoundingClientRect().top/hero.offsetHeight,0,1); if(paused) requestTick(); },{passive:true});
-  document.addEventListener('visibilitychange', () => { if(document.hidden) {cancelAnimationFrame(frameId);frameId=0;} else {if(intro && performance.now()-introStarted>6500) finishIntro(); requestTick();} });
-  reducedMotion.addEventListener('change', event => { paused=event.matches; if(event.matches) finishIntro(); updateButton(); requestTick(); });
-  motionButton.addEventListener('click', () => { paused=!paused; updateButton(); requestTick(); });
+  document.addEventListener('visibilitychange', () => { if(document.hidden) {cancelAnimationFrame(frameId);frameId=0;} else {if(intro && performance.now()-introStarted>INTRO_DURATION_MS) finishIntro(); requestTick();} });
+  reducedMotion.addEventListener('change', event => { paused=event.matches; if(event.matches) finishIntro(); updateMotionState(); requestTick(); });
   document.querySelector('#skip-intro').addEventListener('click',finishIntro);
   document.addEventListener('keydown', event => {if(event.key==='Escape' && intro) finishIntro();});
-  hero.classList.add('has-3d'); document.querySelector('#scene-controls').hidden=false;
-  updateButton();
+  hero.classList.add('has-3d');
+  updateMotionState();
   if (!reducedMotion.matches && document.documentElement.dataset.introFallback !== 'true' && (!window.location.hash || window.location.hash === '#top')) startIntro();
   else {introFinished=true;resize();requestTick();}
   // Expose only declarative scene status on the DOM for QA; no personal data is stored.
