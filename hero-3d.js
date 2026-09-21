@@ -5,9 +5,9 @@ const hero = document.querySelector('.hero');
 const art = document.querySelector('.hero-art');
 const introUI = document.querySelector('#intro-ui');
 const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
-const INTRO_PLAYBACK_RATE = 1.875; // Previous 1.5x speed, increased by another 1.25x.
 const INTRO_DURATION = 6.45;
-const INTRO_DURATION_MS = INTRO_DURATION * 1000 / INTRO_PLAYBACK_RATE;
+const INTRO_DURATION_MS = 2000;
+const INTRO_PLAYBACK_RATE = INTRO_DURATION * 1000 / INTRO_DURATION_MS;
 const clamp = THREE.MathUtils.clamp;
 const lerp = THREE.MathUtils.lerp;
 const smooth = (a, b, value) => { const x = clamp((value - a) / (b - a), 0, 1); return x * x * (3 - 2 * x); };
@@ -96,10 +96,9 @@ if (renderer) {
   let width = 1, height = 1, aspect = 1;
   let intro = false, introStarted = 0, fallbackTimeout = null;
   let frameId = 0, lastFrame = 0, time = 0;
-  let paused = reducedMotion.matches, visible = true, lost = false, introFinished = false;
-  let pointer = { x: 0, y: 0 }, viewOffset = 0, previousFocus = null;
+  let paused = reducedMotion.matches, visible = true, lost = false;
+  let pointer = { x: 0, y: 0 }, viewOffset = 0;
   let target = { x: 0, y: 0, scale: 1 }, current = { x: 0, y: 0, scale: 1 };
-  const mobile = () => window.innerWidth <= 540;
   function resize() {
     const rect = host.getBoundingClientRect(); width = Math.max(rect.width, 1); height = Math.max(rect.height, 1); aspect = width / height;
     renderer.setSize(width, height, false); camera.aspect = aspect; camera.updateProjectionMatrix();
@@ -115,23 +114,24 @@ if (renderer) {
   function updateMotionState() { hero.classList.toggle('motion-paused',paused); }
   function finishIntro() {
     if (!intro) return;
-    intro = false; introFinished = true; clearTimeout(fallbackTimeout);
-    document.body.classList.remove('intro-active','intro-finishing'); introUI.hidden = true;
+    intro = false; clearTimeout(fallbackTimeout);
+    hero.classList.remove('is-assembling'); introUI.hidden = true;
+    hero.dataset.introState = 'complete';
     pieces.forEach(piece => { piece.position.copy(piece.userData.home); piece.rotation.set(0,0,0); });
     resize();
-    if (document.activeElement === document.querySelector('#skip-intro')) (previousFocus?.isConnected ? previousFocus : document.querySelector('.scroll-cue')).focus({preventScroll:true});
+    if (document.activeElement === document.querySelector('#skip-intro')) document.querySelector('.scroll-cue').focus({preventScroll:true});
     requestTick();
   }
   function startIntro() {
     if (reducedMotion.matches || lost) return;
-    previousFocus = document.activeElement;
-    window.scrollTo({ top: 0, behavior: 'instant' });
-    intro = true; introFinished = false; introStarted = performance.now();
-    document.body.classList.add('intro-active'); introUI.hidden = false;
-    document.querySelector('#skip-intro').focus({preventScroll:true});
+    intro = true; introStarted = performance.now();
+    hero.classList.add('is-assembling'); introUI.hidden = false;
+    hero.dataset.introState = 'playing';
+    hero.dataset.introDuration = String(INTRO_DURATION_MS);
+    try { localStorage.setItem('mam:intro-seen-v2', '1'); } catch {}
     // The first canvas frame must already have every piece off screen.
-    resize(); renderScene(introStarted);
-    clearTimeout(fallbackTimeout); fallbackTimeout = setTimeout(finishIntro, INTRO_DURATION_MS + 1000);
+    resize(); current = {...target}; renderScene(introStarted);
+    clearTimeout(fallbackTimeout); fallbackTimeout = setTimeout(finishIntro, INTRO_DURATION_MS + 200);
     requestTick();
   }
   function renderScene(stamp) {
@@ -139,17 +139,8 @@ if (renderer) {
     const delta = lastFrame ? Math.min((stamp-lastFrame)/1000,.05) : .016; lastFrame = stamp;
     if (!paused && !document.hidden) time += delta * (intro ? INTRO_PLAYBACK_RATE : 1);
     const elapsed = intro ? (performance.now()-introStarted)/1000 * INTRO_PLAYBACK_RATE : 10;
-    const transition = intro ? smooth(4.65,6.4,elapsed) : 1;
     if (intro) {
-      const introScale = Math.min(1.02, aspect < .8 ? aspect*1.45 : 1.02);
-      current.x = lerp(0, target.x, transition);
-      current.y = lerp(mobile() ? .8 : .45, target.y, transition);
-      current.scale = lerp(introScale,target.scale,transition);
-      const step = clamp(Math.floor(elapsed / .79),0,4);
-      document.querySelector('#intro-field').textContent = elapsed < 4.3 ? shapes[step].label : 'Five in One team';
-      document.querySelector('#intro-counter').textContent = `0${step+1} / 05`;
-      document.querySelector('#intro-progress').style.transform = `scaleX(${Math.min(elapsed/6.4,1)})`;
-      if (elapsed > 4.6) document.body.classList.add('intro-finishing');
+      current = {...target};
       if (elapsed > INTRO_DURATION) { finishIntro(); return; }
     }
     const rotY = paused ? -.09 : Math.sin(time*.23)*.1 - .09 + pointer.x*.12;
@@ -206,15 +197,15 @@ if (renderer) {
   hero.addEventListener('pointerleave', () => { pointer={x:0,y:0}; });
   const resizeObserver = new ResizeObserver(() => { resize(); requestTick(); }); resizeObserver.observe(host); resizeObserver.observe(art);
   const visibilityObserver = new IntersectionObserver(entries => { visible=entries[0].isIntersecting; if(visible) requestTick(); else if(!intro) {cancelAnimationFrame(frameId); frameId=0;} },{threshold:0}); visibilityObserver.observe(hero);
-  window.addEventListener('scroll', () => { viewOffset=clamp(-hero.getBoundingClientRect().top/hero.offsetHeight,0,1); if(paused) requestTick(); },{passive:true});
+  window.addEventListener('scroll', () => { viewOffset=clamp(-hero.getBoundingClientRect().top/hero.offsetHeight,0,1); if (intro && window.scrollY > 80) finishIntro(); if(paused) requestTick(); },{passive:true});
   document.addEventListener('visibilitychange', () => { if(document.hidden) {cancelAnimationFrame(frameId);frameId=0;} else {if(intro && performance.now()-introStarted>INTRO_DURATION_MS) finishIntro(); requestTick();} });
   reducedMotion.addEventListener('change', event => { paused=event.matches; if(event.matches) finishIntro(); updateMotionState(); requestTick(); });
   document.querySelector('#skip-intro').addEventListener('click',finishIntro);
   document.addEventListener('keydown', event => {if(event.key==='Escape' && intro) finishIntro();});
   hero.classList.add('has-3d');
   updateMotionState();
-  if (!reducedMotion.matches && document.documentElement.dataset.introFallback !== 'true' && (!window.location.hash || window.location.hash === '#top')) startIntro();
-  else {introFinished=true;resize();requestTick();}
+  if (!reducedMotion.matches && document.documentElement.dataset.introEligible === 'true' && window.scrollY < 80 && (!window.location.hash || window.location.hash === '#top')) startIntro();
+  else {hero.dataset.introState='skipped';resize();requestTick();}
   // Expose only declarative scene status on the DOM for QA; no personal data is stored.
   renderer.domElement.dataset.scene = 'mam-five-piece-webgl';
   renderer.domElement.dataset.renderer = 'three-0.180.0';
@@ -222,7 +213,7 @@ if (renderer) {
   window.addEventListener('pageshow', requestTick);
 }
 
-// Reveal the page only after its first frame, or immediately for the image fallback.
+// Release the static symbol guard after the first frame; body text never waits.
 document.dispatchEvent(new Event('mam:scene-ready'));
 
 

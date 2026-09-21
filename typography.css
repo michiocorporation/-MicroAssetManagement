@@ -91,6 +91,8 @@ main .section p { line-height: 1.8; }
 .section-label > span { font-weight: 500; color: var(--text-secondary); }
 .nav { font: 500 14px/1.5 var(--font-latin); letter-spacing: .06em; gap: clamp(20px, 2.5vw, 36px); }
 .nav a { min-height: 44px; }
+.nav > a, .footer-bottom nav > a { display:flex;flex-direction:column;justify-content:center;align-items:center;gap:2px; }
+.nav .nav-ja, .footer-bottom .nav-ja { font:400 12px/1.5 var(--font-body);letter-spacing:.02em;color:var(--text-secondary);white-space:nowrap; }
 .expertise-strip { font-size: 18px; font-weight: 500; letter-spacing: .04em; }
 .platform-node { font-size: 16px; font-weight: 500; line-height: 1.5; }
 .platform-node small { font: 500 12px/1.5 var(--font-latin); letter-spacing: .05em; }
@@ -114,6 +116,21 @@ main .section p { line-height: 1.8; }
 .member-more { font-size: 15px; font-weight: 700; line-height: 1.5; min-height: 44px; }
 .member-card { padding: 24px 18px 18px; }
 .member-top { margin-bottom: 28px; }
+.member-grid { align-items:start; }
+.member-card { display:block;padding:0; }
+.member-card > summary { display:flex;flex-direction:column;list-style:none;padding:24px 18px 18px;cursor:pointer; }
+.member-card > summary::-webkit-details-marker { display:none; }
+.member-card > summary:focus-visible { outline:2px solid var(--cyan);outline-offset:-3px; }
+.member-card .member-name { margin:0;color:var(--ink); }
+.member-biography { padding:0 18px 24px;border-top:1px solid var(--line); }
+.member-bio p { font-size:var(--text-body);color:var(--muted);line-height:1.8; }
+.member-bio { max-width:46em; }
+.member-biography .profile-subheading { font-size:16px;margin:24px 0 12px; }
+.member-biography .profile-tags { gap:6px; }
+.member-biography .profile-tags li { font-size:13px;padding:4px 8px; }
+.member-card[open] .member-more i { transform:rotate(90deg); }
+.profile-bio { white-space:normal; }
+.profile-bio > p { margin:0 0 1.2em; }
 
 .bpo-comparison { align-items: stretch; }
 .bpo-comparison small { font: 500 12px/1.5 var(--font-latin); letter-spacing: .05em; color: #add2e9; }
@@ -153,6 +170,8 @@ main .bpo-comparison h3 { font-size: 22px; }
 @media (max-width: 800px) {
   :root { --text-body: 16px; --text-small: 13px; --text-label: 12px; --text-h2: 28px; --text-h3: 22px; }
   .nav { font-size: 15px; gap: 0; }
+  .nav > a { flex-direction:row;justify-content:flex-start;gap:16px; }
+  .nav .nav-ja { font-size:13px; }
   .section .body-lead, .concept-copy .body-lead { font-size: 22px; }
   .hero h1 > span { font-size: 26px; }
   .hero h1 strong { font-size: 48px; }
@@ -166,6 +185,7 @@ main .bpo-comparison h3 { font-size: 22px; }
 }
 @media (max-width: 700px) {
   .member-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+  .member-card[open] { grid-column:1/-1; }
   .method-steps { display: block; padding-top: 20px; }
   .method-steps li, .method-steps li:first-child { display: grid; grid-template-columns: 82px 60px minmax(0, 1fr); align-items: center; gap: 20px; padding: 24px 0; border: 0; border-bottom: 1px solid var(--line); }
   .method-steps h3, .method-steps p { margin: 0; }
@@ -200,7 +220,9 @@ main .bpo-comparison h3 { font-size: 22px; }
   .detail-label, .text-link, .button, .text-button, .service-contact { font-size: 15px; }
   .team-fields { font-size: 18px; gap: 10px; }
   .leadership-heading > p { font-size: 15px; }
-  .member-card { padding: 20px 14px 16px; }
+  .member-card { padding:0; }
+  .member-card > summary { padding:20px 14px 16px; }
+  .member-biography { padding:0 14px 20px; }
   .member-grid { gap: 12px; }
   .member-top { margin-bottom: 22px; }
   .member-top > span { font-size: 12px; }
@@ -233,4 +255,8 @@ main .bpo-comparison h3 { font-size: 22px; }
   #skip-intro span { margin-left: 8px; }
   .intro-copy h2 { font-size: 24px; letter-spacing: .02em; }
   .intro-counter { font-size: 12px; }
+}
+@media (max-width:370px) {
+  .member-more { font-size:13px;gap:4px; }
+  .member-more i { font-size:17px;flex-shrink:0; }
 }

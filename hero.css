@@ -81,3 +81,8 @@
 .company .company-details dd{margin:0;font-size:15px;line-height:1.95;overflow-wrap:anywhere}
 .company .company-details small{font-size:12px}
 @media(max-width:540px){.company>div:first-child{margin-bottom:30px}.company .company-details>div{padding:21px 0}.company .company-details dd{font-size:13px}.company .company-details small{font-size:11px}}
+
+/* The opening is confined to the hero; navigation and reading remain available. */
+.hero .intro-ui{position:absolute;inset:0;z-index:5;pointer-events:none}
+.hero #skip-intro{top:auto;bottom:5%;left:5%;right:auto;margin:0;font-size:13px;letter-spacing:.02em}
+@media(max-width:540px){.hero #skip-intro{left:5%;bottom:21%;font-size:12px}}

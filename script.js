@@ -16,21 +16,25 @@ document.addEventListener('keydown', event => { if (event.key === 'Escape' && na
 document.addEventListener('click', event => { if (!event.target.closest('.site-header')) closeMenu(); });
 window.matchMedia('(min-width:801px)').addEventListener('change', event => { if (event.matches) closeMenu(); });
 
-const members = {
-  ito: { name: '伊藤 義一', english: 'Yoshikazu ITO｜弁護士', role: '代表取締役 / CEO', bio: '慶應大学理工学部・東京大学大学院を修了後、Microsoftでエンジニアとして勤務。\n\nその後、弁護士へ転身し、法律家として活動する傍ら、IT支援を基軸とした総合コンサルティングファームを設立。', tags: ['法務', 'IT', '経営戦略', 'DX'] },
-  yamazaki: { name: '山崎 泰斗', english: 'Taito Yamazaki', role: '取締役', bio: '東京大学大学院を修了後、シンクタンクにて研究員として勤務。\n\n伊藤と合流しコンサルティング業務に従事する傍ら、コンサルティング先であった建設会社の共同代表に就任。', tags: ['経営管理', '建設経営', '事業戦略', 'コンサルティング'] },
-  suzuki: { name: '鈴木 利幸', english: 'Toshiyuki Suzuki｜一級建築士', role: '取締役', bio: '三菱地所ホーム株式会社にて部長職を務める傍ら、社内コンペティションにて高評価を得たプロジェクトを推進。\n\nMAMにてその事業化を企画し、参画。', tags: ['建築', '不動産', '事業開発', 'プロジェクトマネジメント'] },
-  minagawa: { name: '皆川 直志', english: 'Naoyuki Minagawa', role: '取締役', bio: '環境省補助事業の管理業務や、火力・バイオマス発電所工事の現場責任者を歴任。\n\n多数の案件において、現場調整・施工管理に従事。', tags: ['施工管理', '建設', 'エネルギー', 'プロジェクト管理'] },
-  uchida: { name: '内田 慎也', english: 'Shinya Uchida', role: '取締役', bio: '米国カリフォルニア州立大学への留学後、技術実装支援を経て創業。\n\n再生可能エネルギー分野において、国内外の事業開発、導入支援、戦略立案、運営管理を統括。', tags: ['再生可能エネルギー', '海外事業', '事業開発', '経営戦略'] }
-};
+// Biographies live in HTML; the native details cards work without JavaScript.
 const profileDialog = document.querySelector('#profile-dialog');
-document.querySelectorAll('[data-member]').forEach(button => button.addEventListener('click', () => {
-  const member = members[button.dataset.member];
-  for (const key of ['name', 'english', 'role', 'bio']) document.querySelector(`#profile-${key}`).textContent = member[key];
-  document.querySelector('#profile-tags').replaceChildren(...member.tags.map(tag => { const li = document.createElement('li'); li.textContent = tag; return li; }));
-  profileDialog.showModal();
-  profileDialog.scrollTop = 0;
-}));
+if (typeof profileDialog.showModal === 'function') {
+  document.querySelectorAll('.member-card[data-member]').forEach(card => {
+    const summary = card.querySelector('summary');
+    summary.setAttribute('aria-haspopup', 'dialog');
+    summary.addEventListener('click', event => {
+      event.preventDefault();
+      for (const key of ['name', 'english', 'role']) {
+        document.querySelector('#profile-' + key).textContent = card.querySelector('.member-' + key).textContent;
+      }
+      if (card.dataset.qualification) document.querySelector('#profile-english').textContent += '｜' + card.dataset.qualification;
+      document.querySelector('#profile-bio').replaceChildren(...Array.from(card.querySelector('.member-bio').children, node => node.cloneNode(true)));
+      document.querySelector('#profile-tags').replaceChildren(...Array.from(card.querySelector('.profile-tags').children, node => node.cloneNode(true)));
+      profileDialog.showModal();
+      profileDialog.scrollTop = 0;
+    });
+  });
+}
 document.querySelectorAll('dialog').forEach(dialog => {
   dialog.querySelectorAll('[data-close]').forEach(button => button.addEventListener('click', () => dialog.close()));
   dialog.addEventListener('click', event => {
