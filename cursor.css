@@ -1,0 +1,23 @@
+/* A geometric pointer and a light trailing ring for mouse-operated screens. */
+.mam-cursor { display: none; pointer-events: none; }
+@media (hover: hover) and (pointer: fine) and (forced-colors: none) {
+  html.mam-cursor-on, html.mam-cursor-on * { cursor: none !important; }
+  .mam-cursor { display: block; position: fixed; inset: 0; z-index: 10000; visibility: hidden; pointer-events: none; }
+  .mam-cursor.is-visible { visibility: visible; }
+  .mam-cursor, .mam-cursor * { pointer-events: none !important; }
+  .mam-cursor-pointer, .mam-cursor-halo { position: absolute; left: 0; top: 0; will-change: transform; }
+  .mam-cursor-pointer { width: 24px; height: 28px; }
+  .mam-cursor-tip { display: block; width: 24px; height: 28px; filter: drop-shadow(0 1px 3px #000b); transition: opacity .18s, scale .18s; transform-origin: 2px 2px; }
+  .mam-cursor-halo { width: 48px; height: 48px; }
+  .mam-cursor-ring { position: absolute; inset: 0; border: 1px solid #8bdcf480; border-radius: 50%; background: #37c5ee05; scale: .72; transition: scale .24s, background .24s, border-color .24s; }
+  .mam-cursor-ring::before { content: ''; position: absolute; width: 7px; height: 7px; right: 3px; top: 3px; border-top: 2px solid #ffb900; border-right: 2px solid #ffb900; border-radius: 0 7px 0 0; rotate: -4deg; }
+  .mam-cursor-arrow { position: absolute; left: -9px; top: -9px; width: 18px; height: 18px; stroke: #e4f8ff; stroke-width: 1.6; fill: none; stroke-linecap: round; stroke-linejoin: round; opacity: 0; scale: .65; transition: opacity .18s, scale .18s; filter: drop-shadow(0 1px 3px #000b); }
+  .mam-cursor.is-interactive .mam-cursor-ring { scale: 1.12; border-color: #86d9f4; background: #37c5ee12; }
+  .mam-cursor.is-interactive .mam-cursor-tip { opacity: 0; scale: .5; }
+  .mam-cursor.is-interactive .mam-cursor-arrow { opacity: 1; scale: 1; }
+  .mam-cursor.is-pressed .mam-cursor-ring { scale: .65; background: #37c5ee25; }
+  .mam-cursor.is-pressed .mam-cursor-tip { scale: .8; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .mam-cursor * { transition: none !important; }
+}
