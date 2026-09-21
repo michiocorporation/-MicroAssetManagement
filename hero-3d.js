@@ -127,7 +127,9 @@ if (renderer) {
     intro = true; introFinished = false; introStarted = performance.now();
     document.body.classList.add('intro-active'); introUI.hidden = false;
     document.querySelector('#skip-intro').focus({preventScroll:true});
-    resize(); clearTimeout(fallbackTimeout); fallbackTimeout = setTimeout(finishIntro, 7600);
+    // The first canvas frame must already have every piece off screen.
+    resize(); renderScene(introStarted);
+    clearTimeout(fallbackTimeout); fallbackTimeout = setTimeout(finishIntro, 7600);
     requestTick();
   }
   function renderScene(stamp) {
@@ -209,13 +211,17 @@ if (renderer) {
   document.querySelector('#skip-intro').addEventListener('click',finishIntro);
   document.addEventListener('keydown', event => {if(event.key==='Escape' && intro) finishIntro();});
   hero.classList.add('has-3d'); document.querySelector('#scene-controls').hidden=false;
-  resize(); updateButton();
-  if (!reducedMotion.matches && (!window.location.hash || window.location.hash === '#top')) startIntro(); else {introFinished=true;requestTick();}
+  updateButton();
+  if (!reducedMotion.matches && document.documentElement.dataset.introFallback !== 'true' && (!window.location.hash || window.location.hash === '#top')) startIntro();
+  else {introFinished=true;resize();requestTick();}
   // Expose only declarative scene status on the DOM for QA; no personal data is stored.
   renderer.domElement.dataset.scene = 'mam-five-piece-webgl';
   renderer.domElement.dataset.renderer = 'three-0.180.0';
   window.addEventListener('pagehide', () => {cancelAnimationFrame(frameId); frameId=0;clearTimeout(fallbackTimeout);});
   window.addEventListener('pageshow', requestTick);
 }
+
+// Reveal the page only after its first frame, or immediately for the image fallback.
+document.dispatchEvent(new Event('mam:scene-ready'));
 
 

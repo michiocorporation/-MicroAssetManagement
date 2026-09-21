@@ -6,14 +6,42 @@
   <meta name="theme-color" content="#234b7d">
   <meta name="description" content="地域の建設会社に、経営の力を。MicroAsset Managementは、経営管理・法務・財務・人事から共同購買、資材流動化までを支える経営統合プラットフォームです。">
   <title>MicroAsset Management｜地域の建設会社に、経営の力を。</title>
+  <style>
+    html.intro-pending{background:#080f1b}
+    html.intro-pending body{overflow:hidden}
+    html.intro-pending body::before{content:"";position:fixed;inset:0;z-index:1000;background:#080f1b}
+    html.intro-pending .site-header,html.intro-pending .hero-art{visibility:hidden}
+  </style>
+  <script>
+    // Run before the first paint, while the 3D module is still downloading.
+    (() => {
+      if ((location.hash && location.hash !== '#top') || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      const root = document.documentElement;
+      root.classList.add('intro-pending');
+      const reveal = () => {
+        clearTimeout(timeout);
+        root.classList.remove('intro-pending');
+        document.removeEventListener('mam:scene-ready', reveal);
+        window.removeEventListener('error', onError, true);
+      };
+      const fallback = () => { root.dataset.introFallback = 'true'; reveal(); };
+      const onError = event => {
+        if (event.target?.id === 'hero-animation' || event.filename?.includes('/hero-3d.js')) fallback();
+      };
+      const timeout = setTimeout(fallback, 8000);
+      document.addEventListener('mam:scene-ready', reveal, { once: true });
+      window.addEventListener('error', onError, true);
+      window.addEventListener('pagehide', reveal, { once: true });
+    })();
+  </script>
   <link rel="icon" type="image/png" href="./public/HP_logo_square.png">
   <link rel="stylesheet" href="./public/fonts/fonts.css?v=20260921">
   <link rel="stylesheet" href="./style.css?v=20260921">
-  <link rel="stylesheet" href="./hero.css?v=20260921-4">
+  <link rel="stylesheet" href="./hero.css?v=20260921-5">
   <link rel="stylesheet" href="./typography.css?v=20260921-1">
   <script src="./site-config.js?v=20260921" defer></script>
   <script src="./script.js?v=20260921" defer></script>
-  <script type="module" src="./hero-3d.js?v=20260921-4"></script>
+  <script id="hero-animation" type="module" src="./hero-3d.js?v=20260921-5"></script>
 </head>
 <body>
   <div class="intro-ui" id="intro-ui" hidden><p class="intro-brand">MICROASSET <span>MANAGEMENT</span></p><div class="intro-copy"><p id="intro-field">FIVE EXPERTISE. ONE TEAM.</p><h2>異なる専門性を、<br>一つの力に。</h2><div class="intro-progress"><span id="intro-progress"></span></div></div><button id="skip-intro" type="button">SKIP INTRO <span aria-hidden="true">↗</span></button><p class="intro-counter" id="intro-counter">01 / 05</p></div>
