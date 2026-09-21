@@ -1,0 +1,236 @@
+/* MAM typography: based on the supplied Japanese corporate website font rules.
+   Noto Sans JP for Japanese, Inter for Latin labels; 400 / 500 / 700 only.
+   Text colors are adapted to the existing dark background. */
+:root {
+  --font-body: "Noto Sans JP", "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif;
+  --font-latin: "Inter", "Noto Sans JP", sans-serif;
+  --text-body: 16px;
+  --text-small: 14px;
+  --text-label: 13px;
+  --text-h2: clamp(32px, 2.8vw, 40px);
+  --text-h3: 24px;
+  --muted: #b8c7d6;
+  --text-secondary: #a4b8ca;
+}
+body {
+  font-family: var(--font-body);
+  font-size: var(--text-body);
+  font-weight: 400;
+  line-height: 1.8;
+  letter-spacing: .02em;
+  line-break: strict;
+  overflow-wrap: anywhere;
+}
+button, input, select, textarea { font-family: var(--font-body); }
+strong, b { font-weight: 700; }
+main .section h2, .profile-dialog h2, .confirmation-dialog h2 {
+  font-size: var(--text-h2);
+  font-weight: 700;
+  line-height: 1.4;
+  letter-spacing: .02em;
+  text-wrap: balance;
+}
+main .section h3 {
+  font-size: var(--text-h3);
+  font-weight: 700;
+  line-height: 1.5;
+  letter-spacing: .02em;
+}
+main .section p { line-height: 1.8; }
+.section-top > div, .section-top > p, .problem > div,
+.concept-layout > div, .bpo-layout > div, .network-layout > div { min-width: 0; }
+.section-top > p { max-width: 42em; }
+.section-top { align-items: flex-start; }
+.section .body-lead, .concept-copy .body-lead {
+  font-size: 24px;
+  font-weight: 500;
+  line-height: 1.7;
+  letter-spacing: .02em;
+  color: var(--ink);
+}
+.problem-body > p:not(.body-lead), .concept-copy p:not(.body-lead):not(.section-label),
+.platform-copy p:not(.section-label), .section-top > p,
+.service-card summary > p, .service-detail, .service-detail p, .service-detail li,
+.team-intro > p:last-child, .bpo-layout > div > p:not(.section-label),
+.bpo-comparison p, .method-comparison > p, .method-steps p,
+.network-layout > div > p:not(.section-label), .case-section > p:last-child,
+.contact-copy > p:not(.section-label):not(.contact-signature), .profile-bio {
+  font-size: var(--text-body);
+  font-weight: 400;
+  line-height: 1.8;
+  letter-spacing: .02em;
+  color: var(--muted);
+}
+.concept-copy p, .team-intro > p:last-child, .profile-bio { max-width: 46em; }
+.team-intro > p:last-child { margin-inline: auto; }
+.concept-band em { font-size: inherit; font-weight: 700; }
+.challenge-tags li { font-size: var(--text-small); font-weight: 500; }
+
+/* The hero remains a spacious, central stage for the animated symbol. */
+.hero h1 { font-weight: 700; line-height: 1.35; letter-spacing: .02em; }
+.hero h1 > span { font-size: 30px; font-weight: 500; line-height: 1.5; letter-spacing: .04em; margin-bottom: 8px; }
+.hero h1 strong { font-size: clamp(48px, 4.5vw, 64px); font-weight: 700; line-height: 1.35; letter-spacing: .02em; }
+.hero .eyebrow { font: 500 var(--text-label)/1.5 var(--font-latin); letter-spacing: .12em; color: var(--text-secondary); margin-bottom: 20px; }
+.hero .hero-side-note { font: 400 12px/1.5 var(--font-latin); letter-spacing: .1em; color: #93adc2; }
+.hero .scroll-cue { font: 700 16px/1.5 var(--font-latin); }
+.hero .scroll-cue .scroll-label { font: 700 16px/1.5 var(--font-latin); letter-spacing: .15em; padding-left: .15em; }
+.scene-controls #toggle-motion { width: 44px; min-height: 44px; font: 500 16px/1.5 var(--font-latin); color: #bad0df; }
+.intro-brand { font: 700 15px/1.5 var(--font-latin); letter-spacing: .05em; }
+.intro-brand span { font: 400 12px/1.5 var(--font-latin); letter-spacing: .1em; color: var(--text-secondary); }
+.intro-copy > p { font: 500 var(--text-label)/1.5 var(--font-latin); letter-spacing: .1em; color: #b3ccdf; }
+.intro-copy h2 { font: 700 28px/1.5 var(--font-body); letter-spacing: .03em; }
+.intro-counter { font: 500 13px/1.5 var(--font-latin); letter-spacing: .08em; color: var(--text-secondary); }
+#skip-intro { font: 700 15px/1.5 var(--font-latin); letter-spacing: .08em; min-height: 44px; color: #c7dbe9; }
+
+/* Labels support the hierarchy without excessively wide tracking. */
+.section .section-label, .profile-dialog .section-label, .confirmation-dialog .section-label {
+  font: 700 var(--text-label)/1.5 var(--font-latin);
+  letter-spacing: .1em;
+  color: var(--cyan);
+}
+.section-label > span { font-weight: 500; color: var(--text-secondary); }
+.nav { font: 500 14px/1.5 var(--font-latin); letter-spacing: .06em; gap: clamp(20px, 2.5vw, 36px); }
+.nav a { min-height: 44px; }
+.expertise-strip { font-size: 18px; font-weight: 500; letter-spacing: .04em; }
+.platform-node { font-size: 16px; font-weight: 500; line-height: 1.5; }
+.platform-node small { font: 500 12px/1.5 var(--font-latin); letter-spacing: .05em; }
+.service-number { font: 500 var(--text-label)/1.5 var(--font-latin); letter-spacing: .08em; color: var(--text-secondary); }
+.service-card h3 { margin-bottom: 16px; }
+.service-icon { top: 56px; width: 36px; height: 36px; }
+.detail-label { min-height: 44px; font-size: 16px; font-weight: 700; line-height: 1.5; }
+.text-link, .button, .text-button, .service-contact { font-size: 16px; font-weight: 700; line-height: 1.5; min-height: 44px; }
+.button { min-height: 48px; }
+.team-fields { font-size: 22px; font-weight: 500; letter-spacing: .02em; }
+.leadership-heading > p { font-size: var(--text-body); }
+
+/* Keep profile cards readable at every column count. */
+.member-top > span { font: 500 12px/1.5 var(--font-latin); letter-spacing: .05em; color: var(--text-secondary); }
+.member-top > b { font-family: var(--font-latin); font-weight: 700; }
+.member-role { font-size: 13px; font-weight: 400; line-height: 1.7; min-height: 23px; }
+.member-name { font-size: 26px; font-weight: 700; line-height: 1.5; letter-spacing: .02em; }
+.member-english { font: 400 13px/1.7 var(--font-latin); letter-spacing: .02em; color: var(--text-secondary); white-space: normal; }
+.member-credential { font-size: 14px; font-weight: 500; line-height: 1.7; }
+.member-tags { font-size: 13px; font-weight: 400; line-height: 1.8; color: var(--text-secondary); min-height: 48px; }
+.member-more { font-size: 15px; font-weight: 700; line-height: 1.5; min-height: 44px; }
+.member-card { padding: 24px 18px 18px; }
+.member-top { margin-bottom: 28px; }
+
+.bpo-comparison { align-items: stretch; }
+.bpo-comparison small { font: 500 12px/1.5 var(--font-latin); letter-spacing: .05em; color: #add2e9; }
+main .bpo-comparison h3 { font-size: 22px; }
+.bpo-comparison .bpo-result { font-size: var(--text-body) !important; }
+.method-comparison > span { font-size: var(--text-small); line-height: 1.8; }
+.method-comparison > p { color: #8bdcf4; }
+.method-steps span { font: 500 12px/1.5 var(--font-latin); letter-spacing: .05em; color: #adc9e0; }
+.method-steps li { padding-inline: 20px; }
+.method-loop { font-size: var(--text-small); line-height: 1.8; color: var(--text-secondary); }
+.network-list li { font-size: 20px; font-weight: 500; }
+.network-list span { font: 500 13px/1.5 var(--font-latin); }
+.network-list small { font-size: var(--text-small); font-weight: 400; color: var(--text-secondary); }
+.company .company-details dt { font-size: var(--text-small); font-weight: 500; color: var(--text-secondary); }
+.company .company-details dd { font-size: var(--text-body); font-weight: 400; line-height: 1.8; letter-spacing: .02em; }
+.company .company-details small { font-size: var(--text-small); color: var(--text-secondary); }
+.footer-top > p { font-size: 15px; line-height: 1.8; }
+.footer-bottom nav { font: 500 13px/1.5 var(--font-latin); letter-spacing: .05em; flex-wrap: wrap; gap: 8px 24px; }
+.footer-bottom nav a { display: inline-flex; align-items: center; min-height: 44px; }
+.footer-bottom small { font: 400 12px/1.7 var(--font-latin); letter-spacing: .02em; color: var(--text-secondary); }
+.back-top, .dialog-close { width: 44px; height: 44px; flex-shrink: 0; }
+.profile-role { font-size: 14px; line-height: 1.8; }
+.profile-english { font: 400 14px/1.8 var(--font-latin); }
+.profile-dialog .profile-subheading { font-size: 18px; font-weight: 700; line-height: 1.5; }
+.profile-tags li { font-size: 14px; line-height: 1.7; }
+.contact-form label { font-size: 15px; font-weight: 500; }
+.contact-notice, .form-note, .required, .optional { font-size: 13px; line-height: 1.8; }
+
+@media (max-width: 1199px) {
+  .member-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; }
+  .bpo-layout, .network-layout { grid-template-columns: 1fr; gap: 40px; }
+  .bpo-comparison, .network-list { max-width: 760px; width: 100%; }
+  .bpo-layout > div > p, .network-layout > div > p { max-width: 46em; }
+  .section-top { flex-direction: column; gap: 24px; }
+  .section-top > p { margin: 0; }
+}
+@media (max-width: 800px) {
+  :root { --text-body: 16px; --text-small: 13px; --text-label: 12px; --text-h2: 28px; --text-h3: 22px; }
+  .nav { font-size: 15px; gap: 0; }
+  .section .body-lead, .concept-copy .body-lead { font-size: 22px; }
+  .hero h1 > span { font-size: 26px; }
+  .hero h1 strong { font-size: 48px; }
+  .hero .hero-side-note { display: none; }
+  .hero .scroll-cue .scroll-label { font-size: 15px; }
+  .problem, .concept-layout { grid-template-columns: 1fr; gap: 28px; }
+  .problem-body, .concept-copy { padding-top: 0; }
+  .intro-copy h2 { font-size: 26px; }
+  .intro-copy > p { font-size: 12px; }
+  .footer-bottom { flex-wrap: wrap; }
+}
+@media (max-width: 700px) {
+  .member-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+  .method-steps { display: block; padding-top: 20px; }
+  .method-steps li, .method-steps li:first-child { display: grid; grid-template-columns: 82px 60px minmax(0, 1fr); align-items: center; gap: 20px; padding: 24px 0; border: 0; border-bottom: 1px solid var(--line); }
+  .method-steps h3, .method-steps p { margin: 0; }
+  .method-steps li:not(:last-child)::after { content: '↓'; top: auto; bottom: -13px; left: 110px; right: auto; }
+  .network-list li { display: grid; grid-template-columns: 28px minmax(0, 1fr); column-gap: 16px; row-gap: 4px; }
+  .network-list small { grid-column: 2; margin-left: 0; }
+}
+@media (max-width: 540px) {
+  :root { --text-body: 15px; --text-small: 13px; --text-h2: clamp(24px, 6.7vw, 28px); --text-h3: 21px; }
+  .hero h1 > span { font-size: 21px; letter-spacing: .03em; margin-bottom: 8px; }
+  .hero h1 strong { font-size: 36px; letter-spacing: .02em; }
+  .hero .eyebrow { font-size: 12px; letter-spacing: .1em; margin-bottom: 20px; }
+  .hero .scroll-cue .scroll-label { font-size: 15px; }
+  .expertise-strip { font-size: 15px; letter-spacing: .02em; gap: 12px; }
+  .expertise-strip i { font-size: 12px; }
+  .section .body-lead, .concept-copy .body-lead { font-size: 21px; }
+  .section-heading h2 br.desktop-break { display: none; }
+  .platform-node { font-size: 15px; line-height: 1.5; }
+  .platform-node small { font-size: 12px; letter-spacing: .02em; }
+  .platform-map { aspect-ratio: 600/580; min-height: 430px; margin-block: 24px; }
+  .platform-node { width: 36%; min-height: 82px; padding: 10px 4px; }
+  .node-1, .node-4 { width: 42%; }
+  .node-2, .node-3 { left: 82%; }
+  .node-5, .node-6 { left: 18%; }
+  .node-3, .node-5 { top: 70%; }
+  .node-4 { top: 92%; }
+  .platform-node small { white-space: nowrap; letter-spacing: 0; }
+  .platform-center { width: 28%; border-width: 7px; }
+  .service-card summary { padding: 26px 24px; }
+  .service-detail { padding: 0 24px 26px; }
+  .service-card summary > p { margin-bottom: 24px; }
+  .detail-label, .text-link, .button, .text-button, .service-contact { font-size: 15px; }
+  .team-fields { font-size: 18px; gap: 10px; }
+  .leadership-heading > p { font-size: 15px; }
+  .member-card { padding: 20px 14px 16px; }
+  .member-grid { gap: 12px; }
+  .member-top { margin-bottom: 22px; }
+  .member-top > span { font-size: 12px; }
+  .member-name { font-size: 22px; }
+  .member-role, .member-english { font-size: 12px; }
+  .member-credential { font-size: 13px; margin-top: 18px; }
+  .member-tags { font-size: 13px; }
+  .member-more { font-size: 15px; }
+  .bpo-comparison { grid-template-columns: 1fr; gap: 28px; }
+  .bpo-comparison > div { padding: 24px 20px; }
+  main .bpo-comparison h3 { font-size: 21px; }
+  .bpo-comparison > div:first-child { position: relative; }
+  .bpo-comparison > div:first-child::after { content: '+'; position: absolute; bottom: -31px; left: 50%; transform: translateX(-50%); color: var(--cyan); font-size: 22px; line-height: 28px; }
+  .bpo-plus { display: none; }
+  .method-steps li, .method-steps li:first-child { grid-template-columns: 70px 48px minmax(0, 1fr); gap: 14px; }
+  .method-steps li:not(:last-child)::after { left: 95px; }
+  .method-steps p br { display: none; }
+  .method-comparison { display: block; }
+  .method-comparison > p { margin-top: 14px; }
+  .network-list li { font-size: 18px; }
+  .company .company-details dd { font-size: 15px; }
+  .company .company-details small { font-size: 13px; }
+  .footer-top > p { font-size: 15px; }
+  .footer-bottom nav { font-size: 13px; gap: 8px 18px; }
+  .profile-dialog { padding: 54px 24px 28px; }
+  .profile-dialog .profile-bio { font-size: 16px; line-height: 1.8; }
+  .intro-brand { top: 24px; left: 5%; font-size: 13px; }
+  .intro-brand span { font-size: 12px; letter-spacing: .05em; }
+  #skip-intro { top: 18px; right: 5%; font-size: 15px; }
+  #skip-intro span { margin-left: 8px; }
+  .intro-copy h2 { font-size: 24px; letter-spacing: .02em; }
+  .intro-counter { font-size: 12px; }
+}
